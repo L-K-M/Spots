@@ -89,6 +89,12 @@ fun SettingsScreen(vm: SpotsViewModel, onBack: () -> Unit) {
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
+                ToggleRow(
+                    title = "Rear-facing seat",
+                    subtitle = "Flip the forward/brake cue for a backward-facing seat.",
+                    checked = s.seatReversed,
+                    onCheckedChange = vm::setSeatReversed,
+                )
             }
 
             SectionCard(title = "Appearance") {
@@ -145,6 +151,12 @@ fun SettingsScreen(vm: SpotsViewModel, onBack: () -> Unit) {
                     subtitle = "A livelier, organic shimmer.",
                     checked = s.dynamic,
                     onCheckedChange = vm::setDynamic,
+                )
+                ToggleRow(
+                    title = "Hollow dots",
+                    subtitle = "Draw rings instead of filled dots.",
+                    checked = s.hollow,
+                    onCheckedChange = vm::setHollow,
                 )
 
                 Text("Edges", style = MaterialTheme.typography.bodyLarge)

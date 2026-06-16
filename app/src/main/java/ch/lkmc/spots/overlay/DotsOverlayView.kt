@@ -32,6 +32,7 @@ class DotsOverlayView(context: Context) : View(context) {
     private var baseColorRgb = 0xE8E8EA
     private var opacity = 0.55f
     private var dynamic = false
+    private var hollow = false
 
     private val choreographer = Choreographer.getInstance()
     private var running = false
@@ -60,6 +61,7 @@ class DotsOverlayView(context: Context) : View(context) {
         baseColorRgb = appearance.colorArgb and 0xFFFFFF
         opacity = appearance.opacity
         dynamic = appearance.dynamic
+        hollow = appearance.hollow
         updatePaint()
     }
 
@@ -70,6 +72,12 @@ class DotsOverlayView(context: Context) : View(context) {
     private fun updatePaint() {
         val alpha = (opacity.coerceIn(0f, 1f) * 255f).toInt()
         paint.color = (alpha shl 24) or baseColorRgb
+        if (hollow) {
+            paint.style = Paint.Style.STROKE
+            paint.strokeWidth = (radiusPx * 0.45f).coerceAtLeast(2f)
+        } else {
+            paint.style = Paint.Style.FILL
+        }
     }
 
     private fun start() {

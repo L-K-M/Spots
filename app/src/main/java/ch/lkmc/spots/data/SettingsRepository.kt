@@ -30,8 +30,10 @@ class SettingsRepository(private val context: Context) {
         val opacity = floatPreferencesKey("opacity")
         val colorRgb = intPreferencesKey("color_rgb")
         val dynamic = booleanPreferencesKey("dynamic")
+        val hollow = booleanPreferencesKey("hollow")
         val edges = stringPreferencesKey("edges")
         val detection = stringPreferencesKey("detection")
+        val seatReversed = booleanPreferencesKey("seat_reversed")
         val keepScreenOn = booleanPreferencesKey("keep_screen_on")
         val showComfortMeter = booleanPreferencesKey("show_comfort_meter")
     }
@@ -50,9 +52,11 @@ class SettingsRepository(private val context: Context) {
             opacity = this[Keys.opacity] ?: defaults.opacity,
             colorRgb = this[Keys.colorRgb] ?: defaults.colorRgb,
             dynamic = this[Keys.dynamic] ?: defaults.dynamic,
+            hollow = this[Keys.hollow] ?: defaults.hollow,
             edges = this[Keys.edges]?.let { runCatching { EdgeMode.valueOf(it) }.getOrNull() } ?: defaults.edges,
             detectionSource = this[Keys.detection]?.let { runCatching { DetectionSource.valueOf(it) }.getOrNull() }
                 ?: defaults.detectionSource,
+            seatReversed = this[Keys.seatReversed] ?: defaults.seatReversed,
             keepScreenOn = this[Keys.keepScreenOn] ?: defaults.keepScreenOn,
             showComfortMeter = this[Keys.showComfortMeter] ?: defaults.showComfortMeter,
         )
@@ -65,8 +69,10 @@ class SettingsRepository(private val context: Context) {
     suspend fun setOpacity(v: Float) = edit { it[Keys.opacity] = v.coerceIn(0.05f, 1f) }
     suspend fun setColor(rgb: Int) = edit { it[Keys.colorRgb] = rgb and 0xFFFFFF }
     suspend fun setDynamic(v: Boolean) = edit { it[Keys.dynamic] = v }
+    suspend fun setHollow(v: Boolean) = edit { it[Keys.hollow] = v }
     suspend fun setEdges(v: EdgeMode) = edit { it[Keys.edges] = v.name }
     suspend fun setDetectionSource(v: DetectionSource) = edit { it[Keys.detection] = v.name }
+    suspend fun setSeatReversed(v: Boolean) = edit { it[Keys.seatReversed] = v }
     suspend fun setKeepScreenOn(v: Boolean) = edit { it[Keys.keepScreenOn] = v }
     suspend fun setShowComfortMeter(v: Boolean) = edit { it[Keys.showComfortMeter] = v }
 

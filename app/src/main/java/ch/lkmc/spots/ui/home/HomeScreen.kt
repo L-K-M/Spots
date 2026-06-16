@@ -28,10 +28,15 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -65,16 +70,34 @@ fun HomeScreen(
     val notifLauncher =
         rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) {}
 
+    // True when the user picked an on-mode but still owes us the overlay
+    // permission; once granted, we start the service automatically.
+    var pendingStart by remember { mutableStateOf(false) }
+    var demoPreview by remember { mutableStateOf(false) }
+
     fun selectMode(mode: CueMode) {
-        if (mode != CueMode.OFF) {
-            if (needsNotificationPermission() && !notifGranted) {
-                notifLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
-            }
-            if (!overlayGranted) {
-                overlayLauncher.launch(overlayPermissionIntent(context))
-            }
+        vm.setMode(mode)
+        if (mode == CueMode.OFF) {
+            pendingStart = false
+            vm.stopService()
+            return
         }
-        vm.selectMode(mode)
+        if (needsNotificationPermission() && !notifGranted) {
+            notifLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+        }
+        if (overlayGranted) {
+            vm.startService()
+        } else {
+            pendingStart = true
+            overlayLauncher.launch(overlayPermissionIntent(context))
+        }
+    }
+
+    LaunchedEffect(overlayGranted) {
+        if (overlayGranted && pendingStart) {
+            pendingStart = false
+            vm.startService()
+        }
     }
 
     Scaffold(
@@ -165,16 +188,29 @@ fun HomeScreen(
             SectionCard(title = "Live preview") {
                 LivePreview(
                     settings = settings,
+                    demo = demoPreview,
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(220.dp),
                 )
-                Text(
-                    "Move or tilt your phone to see exactly how the dots will stream. " +
-                        "Tune the look in Settings.",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text("Demo drive", style = MaterialTheme.typography.bodyLarge)
+                        Text(
+                            if (demoPreview) {
+                                "Playing a synthetic ride."
+                            } else {
+                                "Or just tilt and move your phone to see the dots react."
+                            },
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
+                    Switch(checked = demoPreview, onCheckedChange = { demoPreview = it })
+                }
             }
 
             if (settings.showComfortMeter) {

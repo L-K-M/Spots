@@ -43,15 +43,17 @@ val SPOT_PALETTE: List<SpotSwatch> = listOf(
  * [Appearance] and [CueConfig].
  */
 data class SpotsSettings(
-    val mode: CueMode = CueMode.AUTOMATIC,
+    val mode: CueMode = CueMode.OFF,
     val sensitivity: Float = 0.5f,      // 0..1
     val dotCount: Int = 28,
     val dotSize: Float = 0.5f,          // 0..1 → radius 3..9 dp
     val opacity: Float = 0.55f,         // 0..1
     val colorRgb: Int = 0xE8E8EA.toInt(),
     val dynamic: Boolean = false,
+    val hollow: Boolean = false,
     val edges: EdgeMode = EdgeMode.ALL,
     val detectionSource: DetectionSource = DetectionSource.SENSORS_ONLY,
+    val seatReversed: Boolean = false,
     val keepScreenOn: Boolean = false,
     val showComfortMeter: Boolean = false,
 ) {
@@ -64,7 +66,8 @@ data class SpotsSettings(
         colorArgb = (0xFF shl 24) or (colorRgb and 0xFFFFFF),
         edges = edges,
         dynamic = dynamic,
+        hollow = hollow,
     )
 
-    fun toCueConfig(): CueConfig = CueConfig.fromSensitivity(sensitivity)
+    fun toCueConfig(): CueConfig = CueConfig.fromSensitivity(sensitivity, seatReversed)
 }

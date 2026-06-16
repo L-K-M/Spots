@@ -30,12 +30,11 @@ class SpotsViewModel(app: Application) : AndroidViewModel(app) {
 
     val overlayState: StateFlow<OverlayState> = OverlayService.state
 
-    /** Pick the overlay mode; starts or stops the service accordingly. */
-    fun selectMode(mode: CueMode) {
-        viewModelScope.launch { repo.setMode(mode) }
-        val app = getApplication<Application>()
-        if (mode == CueMode.OFF) OverlayService.stop(app) else OverlayService.start(app)
-    }
+    /** Persist the chosen mode (does not start/stop the service — see start/stop). */
+    fun setMode(mode: CueMode) = launchEdit { repo.setMode(mode) }
+
+    fun startService() = OverlayService.start(getApplication<Application>())
+    fun stopService() = OverlayService.stop(getApplication<Application>())
 
     fun setSensitivity(v: Float) = launchEdit { repo.setSensitivity(v) }
     fun setDotCount(v: Int) = launchEdit { repo.setDotCount(v.coerceIn(Appearance.MIN_DOTS, Appearance.MAX_DOTS)) }
@@ -43,8 +42,10 @@ class SpotsViewModel(app: Application) : AndroidViewModel(app) {
     fun setOpacity(v: Float) = launchEdit { repo.setOpacity(v) }
     fun setColor(rgb: Int) = launchEdit { repo.setColor(rgb) }
     fun setDynamic(v: Boolean) = launchEdit { repo.setDynamic(v) }
+    fun setHollow(v: Boolean) = launchEdit { repo.setHollow(v) }
     fun setEdges(v: EdgeMode) = launchEdit { repo.setEdges(v) }
     fun setDetectionSource(v: DetectionSource) = launchEdit { repo.setDetectionSource(v) }
+    fun setSeatReversed(v: Boolean) = launchEdit { repo.setSeatReversed(v) }
     fun setKeepScreenOn(v: Boolean) = launchEdit { repo.setKeepScreenOn(v) }
     fun setShowComfortMeter(v: Boolean) = launchEdit { repo.setShowComfortMeter(v) }
 

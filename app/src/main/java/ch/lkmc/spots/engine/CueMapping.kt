@@ -38,8 +38,9 @@ object CueMapping {
         val yaw = sample.yawLeftRate
         val g = config.sensitivity
 
-        // Forward acceleration pushes the spots down the screen.
-        var vy = config.longitudinalGain * lon * g
+        // Forward acceleration pushes the spots down the screen. longitudinalSign
+        // flips this for a rear-facing seat.
+        var vy = config.longitudinalGain * lon * g * config.longitudinalSign
 
         // A left turn (centripetal acceleration to the left → lat < 0, and/or a
         // positive left-yaw rate) slides the spots to the right.

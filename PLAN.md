@@ -228,14 +228,14 @@ Mirrors the sibling **Kararead** / **release-tool** family conventions.
 
 - [x] Research: Apple feature, motion-sickness science, Android building blocks → `docs/research/`
 - [x] PLAN.md (this file)
-- [ ] Gradle project, version catalog, wrapper, CI-ready debug signing
-- [ ] Theme, navigation, app scaffold
-- [ ] Pure motion math: Vec3/decomposer, filters, cue mapping, spring, dot field, engine
-- [ ] Sensor source + overlay view + foreground service
-- [ ] Vehicle detection (sensors-only + optional activity recognition)
-- [ ] Comfort meter
-- [ ] Settings (DataStore) + all three screens + live preview
-- [ ] Unit tests for every pure module
-- [ ] CI/CD + Dependabot + scripts + released `install.sh` + README
-- [ ] Build green (lint + tests + assembleDebug)
-- [ ] Review → `awesome.md` → implement the worthwhile items
+- [x] Gradle project, version catalog, wrapper, CI-ready debug signing
+- [x] Theme, navigation, app scaffold
+- [x] Pure motion math: Vec3/decomposer, filters, cue mapping, spring, dot field, engine
+- [x] Sensor source + overlay view + foreground service
+- [x] Vehicle detection (sensors-only + optional activity recognition)
+- [x] Comfort meter
+- [x] Settings (DataStore) + all three screens + live preview
+- [x] Unit tests for every pure module
+- [x] CI/CD + Dependabot + scripts + released `install.sh` + README
+- [x] Build green (lint + tests + assembleDebug)
+- [x] Review → `awesome.md` → implement the worthwhile items

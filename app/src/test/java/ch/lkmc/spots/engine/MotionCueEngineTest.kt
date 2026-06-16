@@ -49,4 +49,26 @@ class MotionCueEngineTest {
         engine.setAppearance(Appearance(dotCount = 40))
         assertTrue(engine.dots.size == 40)
     }
+
+    @Test
+    fun verticalBandsStreamMoreThanHorizontalUnderForwardMotion() {
+        val engine = MotionCueEngine(appearance = Appearance(dotCount = 60), seed = 4L)
+        val startY = engine.dots.map { it.y }
+        repeat(10) { engine.update(0.016f, forward(3f)) } // short, no wrap
+        var vertical = 0f
+        var verticalN = 0
+        var horizontal = 0f
+        var horizontalN = 0
+        engine.dots.forEachIndexed { i, d ->
+            val dy = kotlin.math.abs(d.y - startY[i])
+            if (d.edge == Edge.LEFT || d.edge == Edge.RIGHT) {
+                vertical += dy; verticalN++
+            } else {
+                horizontal += dy; horizontalN++
+            }
+        }
+        val vAvg = vertical / verticalN
+        val hAvg = horizontal / horizontalN
+        assertTrue("sides should stream more vertically than top/bottom ($vAvg vs $hAvg)", vAvg > hAvg)
+    }
 }

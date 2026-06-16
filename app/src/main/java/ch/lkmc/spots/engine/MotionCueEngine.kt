@@ -59,10 +59,16 @@ class MotionCueEngine(
                 d.y += (d.homeY - d.y) * alpha
             }
         } else {
-            // Streaming: drift each dot, confined to its edge band.
+            // Streaming: drift each dot, confined to its edge band. Each band
+            // emphasises its long axis (sides stream vertically, top/bottom
+            // horizontally) and damps the cross-axis, so the thin bands don't
+            // flicker as dots recycle.
             for (d in dots) {
-                d.x = wrap(d.x + vx * dt, d.bandMinX, d.bandMaxX)
-                d.y = wrap(d.y + vy * dt, d.bandMinY, d.bandMaxY)
+                val vertical = d.edge == Edge.LEFT || d.edge == Edge.RIGHT
+                val dx = if (vertical) vx * CROSS_AXIS_WEIGHT else vx
+                val dy = if (vertical) vy else vy * CROSS_AXIS_WEIGHT
+                d.x = wrap(d.x + dx * dt, d.bandMinX, d.bandMaxX)
+                d.y = wrap(d.y + dy * dt, d.bandMinY, d.bandMaxY)
             }
         }
     }
@@ -72,5 +78,10 @@ class MotionCueEngine(
         flowX.reset()
         flowY.reset()
         flow = FlowVelocity.ZERO
+    }
+
+    private companion object {
+        /** How much of the cross-axis flow a thin band still shows (0..1). */
+        const val CROSS_AXIS_WEIGHT = 0.28f
     }
 }

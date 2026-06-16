@@ -37,6 +37,8 @@ class SensorMotionSource(
     private var thread: HandlerThread? = null
     private var handler: Handler? = null
 
+    @Volatile private var currentRate = SensorManager.SENSOR_DELAY_GAME
+
     // Latest vectors (only touched on the sensor thread).
     private var gravity = Vec3(0f, 0f, 9.81f)
     private var gyro = Vec3.ZERO
@@ -51,10 +53,26 @@ class SensorMotionSource(
     fun start() {
         if (thread != null) return
         val t = HandlerThread("spots-sensors").also { it.start() }
-        val h = Handler(t.looper)
         thread = t
-        handler = h
-        val rate = SensorManager.SENSOR_DELAY_GAME
+        handler = Handler(t.looper)
+        registerAll(currentRate)
+    }
+
+    /**
+     * Change the sampling rate on the fly (e.g. drop to a slower rate while merely
+     * armed to save power, then speed up while the overlay is visible).
+     */
+    fun setRate(rate: Int) {
+        if (rate == currentRate) return
+        currentRate = rate
+        if (handler != null) {
+            sensorManager.unregisterListener(this)
+            registerAll(rate)
+        }
+    }
+
+    private fun registerAll(rate: Int) {
+        val h = handler ?: return
         if (useRawFallback) {
             accelSensor?.let { sensorManager.registerListener(this, it, rate, h) }
         } else {

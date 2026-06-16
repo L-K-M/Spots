@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.ServiceInfo
 import android.graphics.PixelFormat
+import android.hardware.SensorManager
 import android.hardware.display.DisplayManager
 import android.os.Build
 import android.os.Handler
@@ -108,6 +109,8 @@ class OverlayService : Service() {
         )
         sensorSource = source
         source.start()
+        // Start at a low rate while merely armed; speed up once the overlay shows.
+        source.setRate(SensorManager.SENSOR_DELAY_UI)
         if (settings.detectionSource == DetectionSource.ACTIVITY_RECOGNITION) {
             runCatching { activityDetector.start() }
         }
@@ -143,6 +146,10 @@ class OverlayService : Service() {
 
     private fun setOverlayVisible(visible: Boolean) {
         if (visible) addOverlay() else removeOverlay()
+        // Fast sampling only while the cue is actually on screen.
+        sensorSource?.setRate(
+            if (overlayVisible) SensorManager.SENSOR_DELAY_GAME else SensorManager.SENSOR_DELAY_UI,
+        )
     }
 
     private fun addOverlay() {

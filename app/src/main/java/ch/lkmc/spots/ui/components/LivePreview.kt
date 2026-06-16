@@ -22,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
@@ -29,6 +30,7 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import ch.lkmc.spots.data.SpotsSettings
 import ch.lkmc.spots.engine.MotionCueEngine
+import ch.lkmc.spots.motion.DemoDrive
 import ch.lkmc.spots.motion.MotionSample
 import ch.lkmc.spots.motion.SensorMotionSource
 import java.util.concurrent.atomic.AtomicReference
@@ -48,6 +50,7 @@ private fun displayRotation(context: Context): Int {
 fun LivePreview(
     settings: SpotsSettings,
     modifier: Modifier = Modifier,
+    demo: Boolean = false,
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -80,13 +83,16 @@ fun LivePreview(
     }
 
     var frame by remember { mutableLongStateOf(0L) }
-    LaunchedEffect(Unit) {
+    LaunchedEffect(demo) {
         var last = 0L
+        var demoTime = 0f
         while (true) {
             androidx.compose.runtime.withFrameNanos { now ->
                 val dt = if (last == 0L) 0f else ((now - last) / 1_000_000_000f).coerceIn(0f, 0.05f)
                 last = now
-                engine.update(dt, latest.get())
+                demoTime += dt
+                val sample = if (demo) DemoDrive.sampleAt(demoTime) else latest.get()
+                engine.update(dt, sample)
                 frame = now
             }
         }
@@ -102,7 +108,7 @@ fun LivePreview(
         contentAlignment = Alignment.Center,
     ) {
         Text(
-            text = "Move or tilt your phone",
+            text = if (demo) "Demo drive" else "Move or tilt your phone",
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(24.dp),
@@ -112,11 +118,13 @@ fun LivePreview(
             val w = size.width
             val h = size.height
             val r = settings.dotRadiusDp.dp.toPx()
+            val style = if (settings.hollow) Stroke(width = (r * 0.45f).coerceAtLeast(2f)) else androidx.compose.ui.graphics.drawscope.Fill
             for (d in engine.dots) {
                 drawCircle(
                     color = dotColor,
                     radius = r * d.sizeFactor,
                     center = Offset(d.x * w, d.y * h),
+                    style = style,
                 )
             }
         }

@@ -21,13 +21,18 @@ data class CueConfig(
     val responseTime: Float = 0.18f,      // smoothing of flow onset/offset (s)
     val homeReturnTime: Float = 0.6f,     // how fast dots re-settle at rest (s)
     val restFlow: Float = 0.012f,         // |flow| below this counts as "at rest"
+    val longitudinalSign: Float = 1f,     // -1 flips fwd/brake for rear-facing seats
 ) {
     companion object {
         /**
          * @param sensitivity01 user slider 0..1 → a 0.35..1.8 gain multiplier.
+         * @param seatReversed flips the forward/brake cue for a rear-facing seat.
          */
-        fun fromSensitivity(sensitivity01: Float): CueConfig =
-            CueConfig(sensitivity = 0.35f + 1.45f * sensitivity01.coerceIn(0f, 1f))
+        fun fromSensitivity(sensitivity01: Float, seatReversed: Boolean = false): CueConfig =
+            CueConfig(
+                sensitivity = 0.35f + 1.45f * sensitivity01.coerceIn(0f, 1f),
+                longitudinalSign = if (seatReversed) -1f else 1f,
+            )
     }
 }
 
@@ -42,6 +47,8 @@ data class Appearance(
     val colorArgb: Int = 0xFFE8E8EA.toInt(), // soft grayscale, Apple-like default
     val edges: EdgeMode = EdgeMode.ALL,
     val dynamic: Boolean = false,
+    val hollow: Boolean = false, // draw rings instead of filled dots
+
     /** Side band width as a fraction of screen width. */
     val sideBandFraction: Float = 0.13f,
     /** Top/bottom band height as a fraction of screen height. */
