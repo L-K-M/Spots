@@ -1,0 +1,54 @@
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Build & publish release APK
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+
+      - name: Build release APK
+        run: ./gradlew assembleRelease --stacktrace
+
+      - name: Stage release assets
+        run: |
+          mkdir -p dist
+          cp app/build/outputs/apk/release/*.apk "dist/spots-${GITHUB_REF_NAME}.apk"
+          # Ship the installer alongside the APK so `curl … | bash` always points
+          # at a script matching this release.
+          cp install.sh "dist/install.sh"
+          ( cd dist && sha256sum *.apk > SHA256SUMS )
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v3
+        with:
+          files: |
+            dist/*.apk
+            dist/install.sh
+            dist/SHA256SUMS
+          generate_release_notes: true
+          fail_on_unmatched_files: true
