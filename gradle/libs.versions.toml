@@ -2,7 +2,7 @@
 # Toolchain deliberately pinned to the stack proven by the sibling Kararead repo
 # (builds green on CI with JDK 17), rather than the newest releases. See
 # docs/research/03-android-implementation-research.md §6.
-agp = "8.7.3"
+agp = "9.2.1"
 kotlin = "2.0.21"
 coreKtx = "1.15.0"
 lifecycle = "2.8.7"
