@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">Spots</string>
+    <string name="app_tagline">Vehicle motion cues for Android</string>
+
+    <!-- Foreground-service notification -->
+    <string name="notif_channel_name">Motion cues</string>
+    <string name="notif_channel_desc">Shown while the spots overlay is active.</string>
+    <string name="notif_active_title">Spots is active</string>
+    <string name="notif_active_text">Showing motion cues at the screen edges.</string>
+    <string name="notif_armed_title">Spots is armed</string>
+    <string name="notif_armed_text">Waiting to detect vehicle motion.</string>
+    <string name="notif_action_stop">Stop</string>
+
+    <string name="disclaimer">Spots is an experimental comfort aid, not a medical device. It may help reduce motion sickness for some people; results vary. For passengers only — never for the driver.</string>
+</resources>

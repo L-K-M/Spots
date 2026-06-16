@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Base theme. Compose drives the real colours (Material 3 + dynamic colour);
+         this platform theme only sets the window chrome before Compose draws. A
+         night variant lives in values-night/. Parent is available since API 21. -->
+    <style name="Theme.Spots" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">@color/window_background</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+    </style>
+</resources>

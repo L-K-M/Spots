@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Legacy auto-backup (Android 11 and below). Spots only stores small local
+     preferences (DataStore), which are fine to back up. -->
+<full-backup-content>
+    <include domain="file" path="datastore/" />
+</full-backup-content>
