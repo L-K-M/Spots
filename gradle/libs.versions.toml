@@ -3,14 +3,14 @@
 # (builds green on CI with JDK 17), rather than the newest releases. See
 # docs/research/03-android-implementation-research.md §6.
 agp = "8.7.3"
-kotlin = "2.0.21"
+kotlin = "2.4.10"
 coreKtx = "1.15.0"
 lifecycle = "2.8.7"
 activityCompose = "1.9.3"
 composeBom = "2024.12.01"
 navigationCompose = "2.8.5"
 datastore = "1.1.1"
-coroutines = "1.9.0"
+coroutines = "1.11.0"
 playServicesLocation = "21.3.0"
 junit = "4.13.2"
 turbine = "1.2.0"
